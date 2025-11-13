@@ -1,8 +1,7 @@
 package com.example.tests;
 
-import com.example.KittensProvider;
+import com.example.Feline;
 import com.example.Lion;
-import com.example.Predator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,51 +19,48 @@ import static org.mockito.Mockito.*;
 class LionTest {
 
     @Mock
-    KittensProvider kittens;
-
-    @Mock
-    Predator predator;
+    private Feline feline;
 
     @Test
     @DisplayName("У самца льва есть грива")
     void maleHasManeTest() throws Exception {
-        Lion lion = new Lion("Самец", kittens, predator);
+        Lion lion = new Lion("Самец", feline);
         assertTrue(lion.doesHaveMane());
     }
 
     @Test
     @DisplayName("У самки льва нет гривы")
     void femaleNoManeTest() throws Exception {
-        Lion lion = new Lion("Самка", kittens, predator);
+        Lion lion = new Lion("Самка", feline);
         assertFalse(lion.doesHaveMane());
     }
 
     @ParameterizedTest(name = "Исключение при некорректном значении пола: {0}")
     @ValueSource(strings = {"", "самец", "Лев", "Other", "123"})
     void invalidSexThrowsExceptionTest(String sex) {
-        Exception ex = assertThrows(Exception.class, () -> new Lion(sex, kittens, predator));
+        Exception ex = assertThrows(Exception.class, () -> new Lion(sex, feline));
         assertTrue(ex.getMessage().contains("Используйте допустимые значения"));
     }
 
     @Test
     @DisplayName("getKittens использует KittensProvider")
     void getKittensUsesProviderTest() throws Exception {
-        when(kittens.getKittens()).thenReturn(3);
+        when(feline.getKittens()).thenReturn(3);
 
-        Lion lion = new Lion("Самец", kittens, predator);
+        Lion lion = new Lion("Самец", feline);
         assertEquals(3, lion.getKittens());
-        verify(kittens, times(1)).getKittens();
-        verifyNoMoreInteractions(kittens);
+        verify(feline, times(1)).getKittens();
+        verifyNoMoreInteractions(feline);
     }
 
     @Test
     @DisplayName("getFood использует Predator.eatMeat()")
     void getFoodUsesPredatorTest() throws Exception {
-        when(predator.eatMeat()).thenReturn(List.of("Животные", "Птицы", "Рыба"));
+        when(feline.eatMeat()).thenReturn(List.of("Животные", "Птицы", "Рыба"));
 
-        Lion lion = new Lion("Самец", kittens, predator);
+        Lion lion = new Lion("Самец", feline);
         assertEquals(List.of("Животные", "Птицы", "Рыба"), lion.getFood());
-        verify(predator, times(1)).eatMeat();
-        verifyNoMoreInteractions(predator);
+        verify(feline, times(1)).eatMeat();
+        verifyNoMoreInteractions(feline);
     }
 }
